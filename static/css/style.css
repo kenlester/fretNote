@@ -16,9 +16,57 @@ body {
 
 h1 {
   color: #0078d4;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-p {
-  color: #333;
-  line-height: 1.5;
+.fretboard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.string {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+  height: 40px;
+}
+
+.fret {
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.fret:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ddd;
+}
+
+.note {
+  background: #0078d4;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.note:hover {
+  transform: scale(1.1);
 }

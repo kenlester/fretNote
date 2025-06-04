@@ -13,11 +13,36 @@
   <div id="root"></div>
   
   <script type="text/babel">
+    function Fretboard({ strings = 6, frets = 5 }) {
+      const notes = ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#'];
+      
+      const getNote = (string, fret) => {
+        const openNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
+        const openNote = openNotes[string];
+        const noteIndex = (notes.indexOf(openNote) + fret) % 12;
+        return notes[noteIndex];
+      };
+
+      return (
+        <div className="fretboard">
+          {Array.from({ length: strings }).map((_, string) => (
+            <div key={string} className="string">
+              {Array.from({ length: frets + 1 }).map((_, fret) => (
+                <div key={fret} className="fret">
+                  <div className="note">{getNote(string, fret)}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     function App() {
       return (
         <div className="app">
-          <h1>Hello from React on Azure!</h1>
-          <p>This is a minimal React app deployed to Azure Static Web Apps</p>
+          <h1>Guitar Fretboard Notes</h1>
+          <Fretboard strings={6} frets={12} />
         </div>
       );
     }
