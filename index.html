@@ -13,43 +13,78 @@
   <div id="root"></div>
   
   <script type="text/babel">
-    function Fretboard({ strings = 6, frets = 5 }) {
-      const notes = ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#'];
-      
+    const NOTES = ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#'];
+
+    function normalizeNote(noteString) {
+      if (!noteString) {
+        return noteString;
+      }
+      const flatToSharpMap = {
+        'G♭': 'F#', 'A♭': 'G#', 'B♭': 'A#',
+        'D♭': 'C#', 'E♭': 'D#',
+        'C♭': 'B', 'F♭': 'E'
+      };
+      return flatToSharpMap[noteString] || noteString;
+    }
+
+    function getChordNotes(rootNote, chordType = 'major') {
+      rootNote = normalizeNote(rootNote); // Normalize at the beginning
+      if (!rootNote) {
+        return [];
+      }
+      const rootIndex = NOTES.indexOf(rootNote);
+      if (rootIndex === -1) {
+        // If rootNote is still not found after normalization, it's not in our NOTES array
+        return [];
+      }
+
+      if (chordType === 'major') {
+        const majorThird = NOTES[(rootIndex + 4) % 12];
+        const perfectFifth = NOTES[(rootIndex + 7) % 12];
+        return [rootNote, majorThird, perfectFifth];
+      }
+      // Placeholder for other chord types
+      return [];
+    }
+
+    function Fretboard({ strings = 6, frets = 5, selectedCellValue: propSelectedCellValue }) {
       const getNote = (string, fret) => {
         const openNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
         const openNote = openNotes[string];
-        const noteIndex = (notes.indexOf(openNote) + fret) % 12;
-        return notes[noteIndex];
+        const noteIndex = (NOTES.indexOf(openNote) + fret) % 12;
+        return NOTES[noteIndex];
       };
+
+      const normalizedSelectedCellValue = normalizeNote(propSelectedCellValue);
+      const chordNotesArray = propSelectedCellValue ? getChordNotes(normalizedSelectedCellValue, 'major') : [];
 
       return (
         <div className="fretboard">
           {Array.from({ length: strings }).map((_, string) => (
             <div key={string} className="string">
-              {Array.from({ length: frets + 1 }).map((_, fret) => (
-                <div key={fret} className="fret">
-                  <div className="note">{getNote(string, fret)}</div>
-                </div>
-              ))}
+              {Array.from({ length: frets + 1 }).map((_, fret) => {
+                const currentNoteValue = getNote(string, fret);
+                let noteClasses = "note";
+                if (currentNoteValue === normalizedSelectedCellValue && propSelectedCellValue) { // ensure propSelectedCellValue is not null
+                  noteClasses += " selected-root-note";
+                } else if (chordNotesArray.includes(currentNoteValue) && propSelectedCellValue) { // ensure propSelectedCellValue is not null
+                  noteClasses += " chord-interval-note";
+                }
+                return (
+                  <div key={fret} className="fret">
+                    <div className={noteClasses}>{currentNoteValue}</div>
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
       );
     }
 
-    function CsvTable() {
+    function CsvTable({ selectedCellValue, selectCell }) {
       const [headers, setHeaders] = React.useState([]);
       const [rows, setRows] = React.useState([]);
-      const [selectedCellValue, setSelectedCellValue] = React.useState(null);
-
-      const selectCell = (value) => {
-        if (selectedCellValue === value) {
-          setSelectedCellValue(null);
-        } else {
-          setSelectedCellValue(value);
-        }
-      };
 
       React.useEffect(() => {
         fetch('/static/data.csv')
@@ -97,14 +132,33 @@
       );
     }
 
-    function App() {
-      return (
-        <div className="app">
-          <h1>Guitar Fretboard Notes</h1>
-          <CsvTable />
-          <Fretboard strings={6} frets={12} />
-        </div>
-      );
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          selectedCellValue: null, // This will store the original value from the CSV
+        };
+        this.selectCell = this.selectCell.bind(this);
+      }
+
+      selectCell(value) {
+        // The value from the CSV cell, potentially un-normalized
+        this.setState(prevState => ({
+          selectedCellValue: prevState.selectedCellValue === value ? null : value,
+        }));
+      }
+
+      render() {
+        // Pass the original selectedCellValue to CsvTable and Fretboard
+        // Fretboard will handle normalization for its display logic
+        return (
+          <div className="app">
+            <h1>Guitar Fretboard Notes</h1>
+            <CsvTable selectedCellValue={this.state.selectedCellValue} selectCell={this.selectCell} />
+            <Fretboard strings={6} frets={12} selectedCellValue={this.state.selectedCellValue} />
+          </div>
+        );
+      }
     }
     
     const root = ReactDOM.createRoot(document.getElementById('root'));
