@@ -93,3 +93,15 @@ th {
 .csv-table td.selected {
   background-color: yellow;
 }
+
+/* Added for selected note highlighting on fretboard */
+.note.selected-root-note {
+  background-color: #ffcc00; /* Bright yellow/orange */
+  color: #000; /* Black text for better contrast on yellow */
+}
+
+/* Added for chord interval note highlighting on fretboard */
+.note.chord-interval-note {
+  background-color: #66ccff; /* Light blue */
+  color: #000; /* Black text for better contrast */
+}
