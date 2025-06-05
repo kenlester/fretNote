@@ -88,3 +88,8 @@ th {
   text-align: left;
   background-color: #f2f2f2;
 }
+
+/* Added for cell selection highlighting */
+.csv-table td.selected {
+  background-color: yellow;
+}

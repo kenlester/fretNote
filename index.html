@@ -41,6 +41,15 @@
     function CsvTable() {
       const [headers, setHeaders] = React.useState([]);
       const [rows, setRows] = React.useState([]);
+      const [selectedCellValue, setSelectedCellValue] = React.useState(null);
+
+      const selectCell = (value) => {
+        if (selectedCellValue === value) {
+          setSelectedCellValue(null);
+        } else {
+          setSelectedCellValue(value);
+        }
+      };
 
       React.useEffect(() => {
         fetch('/static/data.csv')
@@ -73,7 +82,13 @@
             {rows.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {row.map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell}</td>
+                    <td
+                      key={cellIndex}
+                      onClick={() => selectCell(cell)}
+                      className={selectedCellValue === cell ? 'selected' : ''}
+                    >
+                      {cell}
+                    </td>
                 ))}
               </tr>
             ))}
