@@ -1,6 +1,6 @@
-import { useState } from 'react';
+const { useState } = React;
 
-export default function FretboardMatrix() {
+function FretboardMatrix() {
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   
   // Parse CSV data into 2D array
