@@ -70,3 +70,21 @@ h1 {
 .note:hover {
   transform: scale(1.1);
 }
+
+/* Table styles */
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  width: 100%; /* Optional: makes the table take full width of its container */
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+th {
+  text-align: left;
+  background-color: #f2f2f2;
+}
